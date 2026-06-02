@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>촬영장비 렌탈 가격 비교</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;color:#111;font-size:14px}
+.wrap{max-width:760px;margin:0 auto;padding:1.25rem 1rem 3rem}
+h1{font-size:20px;font-weight:600;margin-bottom:3px}
+.sub{font-size:11px;color:#666;margin-bottom:.9rem}
+.tabs{display:flex;border-bottom:1px solid #ddd;margin-bottom:1rem;gap:0}
+.tb{padding:9px 16px;font-size:13px;cursor:pointer;background:none;border:none;color:#888;border-bottom:2px solid transparent}
+.tb.on{color:#111;font-weight:600;border-bottom-color:#111}
+/* search card */
+.scard{background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:1rem;margin-bottom:1rem}
+.catg{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:.85rem}
+.ct{padding:6px 4px;border-radius:8px;border:1px solid #ddd;font-size:11px;cursor:pointer;background:#fff;text-align:center;line-height:1.35;transition:.12s}
+.ct span:first-child{display:block;font-size:14px;margin-bottom:1px}
+.ct.on{background:#111;color:#fff;border-color:#111}
+.frow{display:grid;grid-template-columns:1fr 1fr 68px auto;gap:7px;align-items:end;margin-bottom:6px}
+.fl label{display:block;font-size:11px;color:#888;margin-bottom:3px}
+.fl select,.fl input{width:100%;padding:7px 9px;border:1px solid #ddd;border-radius:8px;font-size:12px;background:#fff}
+.btn{padding:8px 14px;background:#111;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer}
+.mets{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:.9rem}
+.met{background:#f8f8f8;border-radius:8px;padding:.6rem .85rem}
+.met .ml{font-size:10px;color:#888;margin-bottom:2px}
+.met .mv{font-size:16px;font-weight:600}
+.tog-row{display:flex;align-items:center;gap:8px;margin-bottom:.55rem}
+.tog-row label{font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px}
+.tog{position:relative;width:32px;height:18px;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0}
+.sl{position:absolute;inset:0;background:#ccc;border-radius:20px;transition:.18s}
+.sl:before{content:'';position:absolute;height:12px;width:12px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.18s}
+.tog input:checked+.sl{background:#5B4FCF}
+.tog input:checked+.sl:before{transform:translateX(14px)}
+.filt{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.55rem;align-items:center}
+.filt .fl0{font-size:11px;color:#888}
+.tg{padding:3px 9px;border-radius:20px;border:1px solid #ddd;font-size:11px;cursor:pointer;background:#fff;transition:.1s}
+.tg.on{background:#111;color:#fff;border-color:#111}
+.sr{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.sr span{font-size:11px;color:#888}
+.ss{padding:3px 8px;border:1px solid #ddd;border-radius:6px;font-size:11px;background:#fff}
+.rcard{background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:.8rem .95rem;margin-bottom:6px;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;transition:.1s}
+.rcard:hover{border-color:#aaa}
+.rcard.best{border:2px solid #1D9E75}
+.rn{font-size:13px;font-weight:600;margin-bottom:2px;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.rm{font-size:10px;color:#888;display:flex;gap:8px;flex-wrap:wrap;margin-bottom:2px}
+.rnote{font-size:10px;color:#666}
+.al{font-size:13px;font-weight:600;color:#111;text-decoration:none}
+.al:hover{color:#1D5FA5;text-decoration:underline}
+.bg{display:inline-block;padding:1px 6px;border-radius:20px;font-size:9px;font-weight:600}
+.b0{background:#E1F5EE;color:#0F6E56}.b1{background:#E6F1FB;color:#185FA5}
+.b2{background:#FAEEDA;color:#854F0B}.b3{background:#EEEDFE;color:#3C3489}
+.pb{text-align:right;min-width:100px}
+.po{font-size:10px;color:#bbb;text-decoration:line-through}
+.pm{font-size:17px;font-weight:700}
+.pm.std{color:#5B4FCF}
+.ps{font-size:10px;color:#888}
+.nores{text-align:center;padding:2rem;color:#999;font-size:12px}
+/* connector */
+.conn-search{width:100%;padding:11px 14px;border:1px solid #ddd;border-radius:12px;font-size:14px;background:#fff;margin-bottom:.75rem}
+.conn-hint{font-size:11px;color:#888;margin-bottom:.85rem}
+.gcard{background:#fff;border:1px solid #e0e0e0;border-radius:12px;margin-bottom:.65rem;overflow:hidden}
+.ghead{padding:.85rem 1rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:.1s}
+.ghead:hover{background:#f8f8f8}
+.ghtitle{font-size:14px;font-weight:600}
+.ghcat{font-size:10px;color:#888;margin-top:2px}
+.garrow{font-size:12px;color:#bbb;transition:.15s}
+.gcard.open .garrow{transform:rotate(180deg)}
+.gbody{display:none;padding:.85rem 1rem 1rem;border-top:1px solid #eee}
+.gcard.open .gbody{display:block}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;padding:.5rem 0 .85rem}
+.si .sk{font-size:10px;color:#888;margin-bottom:1px}
+.si .sv{font-size:12px;font-weight:600}
+.csec{margin-bottom:.7rem}
+.ctitle{font-size:10px;font-weight:600;color:#666;letter-spacing:.06em;text-transform:uppercase;margin-bottom:.4rem;display:flex;align-items:center;gap:5px}
+.cdot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+.cpills{display:flex;flex-wrap:wrap;gap:5px}
+.cp{padding:4px 11px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid}
+.pw{background:#FAEEDA;color:#633806;border-color:#FAC775}
+.sig{background:#E6F1FB;color:#042C53;border-color:#85B7EB}
+.aud{background:#E1F5EE;color:#04342C;border-color:#5DCAA5}
+.vid{background:#EEEDFE;color:#26215C;border-color:#AFA9EC}
+.dat{background:#FCEBEB;color:#501313;border-color:#F09595}
+.mnt{background:#F1EFE8;color:#2C2C2A;border-color:#B4B2A9}
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:.6rem;padding-top:.5rem;border-top:1px solid #eee}
+.li{font-size:10px;color:#888;display:flex;align-items:center;gap:4px}
+.disc{font-size:10px;color:#aaa;margin-top:.85rem;padding-top:.6rem;border-top:1px solid #eee}
+@media(max-width:540px){
+  .frow{grid-template-columns:1fr 1fr}
+  .rcard{grid-template-columns:1fr}
+  .pb{text-align:left}
+  .mets{grid-template-columns:1fr 1fr}
+  .sgrid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>촬영 장비 렌탈 가격 비교</h1>
+<p class="sub">국내 14개 렌탈샵 · 장비 스펙 & 커넥터 정보 · 수집일: 2026년 4월</p>
+
+<div class="tabs">
+  <button class="tb on" onclick="switchTab('price',this)">💰 가격 비교</button>
+  <button class="tb" onclick="switchTab('conn',this)">🔌 커넥터 & 스펙</button>
+</div>
+
+<!-- 가격 비교 -->
+<div id="tv-price">
+  <div class="scard">
+    <div class="catg" id="catg"></div>
+    <div class="frow">
+      <div class="fl"><label>장비</label><select id="gsel" onchange="doSearch()"></select></div>
+      <div class="fl"><label>샵 검색</label><input id="kw" placeholder="렌탈샵명" oninput="doRender()"/></div>
+      <div class="fl"><label>기간(일)</label><input type="number" id="days" value="1" min="1" max="30" onchange="doSearch()"/></div>
+      <div class="fl" style="align-self:end"><button class="btn" onclick="doSearch()">비교</button></div>
+    </div>
+    <div style="text-align:right;font-size:10px;color:#aaa">* 바디 단품 기준. 풀세트는 다를 수 있음</div>
+  </div>
+  <div id="mets" class="mets" style="display:none">
+    <div class="met"><div class="ml">비교 샵</div><div class="mv" id="mcnt">-</div></div>
+    <div class="met"><div class="ml">최저가</div><div class="mv" id="mmin">-</div></div>
+    <div class="met"><div class="ml">최고가</div><div class="mv" id="mmax">-</div></div>
+  </div>
+  <div id="fw" style="display:none">
+    <div class="tog-row">
+      <label><span class="tog"><input type="checkbox" id="stog" onchange="doRender()"><span class="sl"></span></span>학생 할인가 보기</label>
+      <span id="snote" style="font-size:10px;color:#5B4FCF;display:none">할인 없는 샵은 일반가</span>
+    </div>
+    <div class="filt">
+      <span class="fl0">필터:</span>
+      <span class="tg on" onclick="setFilt(this,'전체')">전체</span>
+      <span class="tg" onclick="setFilt(this,'당일수령')">당일수령</span>
+      <span class="tg" onclick="setFilt(this,'택배가능')">택배가능</span>
+      <span class="tg" onclick="setFilt(this,'보증금없음')">보증금없음</span>
+      <span class="tg" onclick="setFilt(this,'학생할인')">학생할인만</span>
+    </div>
+    <div class="sr">
+      <span id="rlbl"></span>
+      <select class="ss" id="ssort" onchange="doRender()"><option value="price">가격 낮은순</option><option value="name">이름순</option></select>
+    </div>
+  </div>
+  <div id="res"></div>
+  <p class="disc">학생할인: 제이포 30% · SLR렌트 25% · 칠렌탈·빌리지·수상한렌탈·480p 20% · 예약 전 각 사이트에서 최종 확인</p>
+</div>
+
+<!-- 커넥터 & 스펙 -->
+<div id="tv-conn" style="display:none">
+  <input class="conn-search" id="ckw" placeholder="🔍  장비명 검색  예) FX6, ALEXA, MixPre, Aputure 600D, DJI Mic ..." oninput="renderConn()"/>
+  <p class="conn-hint">카드를 클릭하면 스펙과 커넥터 정보가 펼쳐집니다</p>
+  <div id="conn-list"></div>
+</div>
+</div>
+
+<script>
+const CATS={
+  cinema:{i:'🎬',l:'시네마캠',g:[
+    {id:'alexa35',n:'ARRI ALEXA 35'},{id:'alexamini',n:'ARRI ALEXA MINI'},
+    {id:'alexaminilf',n:'ARRI ALEXA MINI LF'},{id:'amira',n:'ARRI AMIRA'},
+    {id:'burano',n:'Sony BURANO'},{id:'fx9',n:'Sony FX9'},{id:'fx6',n:'Sony FX6'},
+    {id:'fx3',n:'Sony FX3'},{id:'fx2',n:'Sony FX2'},{id:'fs7',n:'Sony FS7 M2'},
+    {id:'c300',n:'Canon C300 Mark II'},{id:'c70',n:'Canon C70'},
+    {id:'r5c',n:'Canon EOS R5c'},{id:'komodo',n:'RED KOMODO 6K'},
+    {id:'raptor',n:'RED V-RAPTOR [X]'},{id:'monstro',n:'RED MONSTRO 8K'},
+    {id:'bmpcc6k',n:'Blackmagic PYXIS 6K'},{id:'pyxis12k',n:'Blackmagic PYXIS 12K'},
+  ]},
+  mirrorless:{i:'📷',l:'미러리스',g:[
+    {id:'a7m5',n:'Sony A7M5'},{id:'a7s3',n:'Sony A7S III'},
+    {id:'r6m3',n:'Canon EOS R6 Mark III'},{id:'lumixs1ii',n:'Panasonic LUMIX S1II'},
+    {id:'nikonzr',n:'Nikon Z8/9'},{id:'gh6',n:'Panasonic GH6'},
+  ]},
+  led:{i:'💡',l:'LED 조명',g:[
+    {id:'ap60x',n:'Aputure amaran 60X'},{id:'ap100d',n:'Aputure amaran 100d'},
+    {id:'ap300dmk2',n:'Aputure 300D Mark II'},{id:'ap300x',n:'Aputure 300X Bi-Color'},
+    {id:'ap300c',n:'Aputure amaran 300c RGB'},{id:'ap600d',n:'Aputure LS 600D Pro'},
+    {id:'ap600x',n:'Aputure LS 600X Pro'},{id:'ap600c',n:'Aputure LS 600C Pro RGB'},
+    {id:'ap1200d',n:'Aputure LS 1200D'},{id:'ap1200x',n:'Aputure Storm 1200X'},
+    {id:'ap700x',n:'Aputure Storm 700X'},{id:'ap400x',n:'Aputure Storm 400X'},
+    {id:'ap80c',n:'Aputure amaran 80C'},{id:'nova300c',n:'Aputure Nova P300C'},
+    {id:'apray360c',n:'Aputure amaran Ray 360C'},{id:'apmc',n:'Aputure MC'},
+    {id:'apf22c',n:'Aputure amaran F22C'},{id:'apf21c',n:'Aputure amaran F21C'},
+    {id:'aport2c',n:'Aputure amaran T2C'},{id:'b7c',n:'Aputure B7C'},
+    {id:'nan60c',n:'Nanlite Forza 60C'},{id:'nan300',n:'Nanlite Forza 300'},
+    {id:'evoke1200',n:'Nanlite Evoke 1200'},{id:'cineroid',n:'Cineroid CFL 800'},
+  ]},
+  audio:{i:'🎙️',l:'음향',g:[
+    {id:'djmic3',n:'DJI Mic 3'},{id:'djmic2',n:'DJI Mic 2'},
+    {id:'larkmax2',n:'HollyLand LARK MAX2'},{id:'mixpre3',n:'Sound Devices MixPre-3 II'},
+    {id:'mixpre6',n:'Sound Devices MixPre-6'},{id:'senn416',n:'Sennheiser MKH-416'},
+    {id:'ntg3',n:'RODE NTG-3'},{id:'uwpd21',n:'Sony UWP-D21'},{id:'dpa4060',n:'DPA 4060'},
+  ]},
+  lens:{i:'🔭',l:'렌즈',g:[
+    {id:'l2470',n:'24-70mm f/2.8'},{id:'l70200',n:'70-200mm f/2.8'},
+    {id:'l1635',n:'16-35mm f/2.8'},{id:'l50',n:'50mm f/1.4'},{id:'l85',n:'85mm f/1.4'},
+  ]},
+  support:{i:'🎥',l:'지지/이동',g:[
+    {id:'rs3pro',n:'DJI RS3 Pro'},{id:'djiair3',n:'DJI Air 3'},
+    {id:'djimavic4',n:'DJI Mavic 4 Pro'},{id:'monitor',n:'온캐머라 모니터'},
+  ]},
+};
+
+const GDB={
+  alexa35:{n:'ARRI ALEXA 35',cat:'시네마캠',
+    spec:{센서:'4.6K ALEV 4 CMOS',해상도:'4608×3164',프레임레이트:'최대 120fps @ 4.6K',다이나믹레인지:'17 stop',코덱:'ARRIRAW / Apple ProRes',마운트:'LPL / PL',무게:'3.5 kg'},
+    pw:['D-Tap 2핀 (24V 출력)','V-Mount 배터리 플레이트','Gold Mount 배터리 플레이트'],
+    sig:['BNC 12G-SDI (모니터 Out)','BNC 12G-SDI (녹화 Out)','4-pin Lemo (Sync/TC In)','5-pin Lemo (EXT)'],
+    aud:['XLR 3-pin Combo ×2 (48V Phantom)'],vid:['HDMI 2.0'],
+    dat:['USB-C (미디어/펌웨어)','RJ-45 Ethernet (원격제어)','Lemo 6-pin (EXT I/O)'],
+    mnt:['LPL Mount','PL Mount (LPL-PL 어댑터)']},
+  alexamini:{n:'ARRI ALEXA MINI',cat:'시네마캠',
+    spec:{센서:'Super 35 CMOS (28.17×18.13mm)',해상도:'3.4K / 4K',프레임레이트:'최대 200fps',다이나믹레인지:'14.5 stop',코덱:'ARRIRAW / Apple ProRes',마운트:'LPL / PL',무게:'2.3 kg'},
+    pw:['D-Tap 2핀 (24V)','4-pin XLR (12~34V)','V-Mount (어댑터)'],
+    sig:['BNC 3G/6G-SDI','4-pin Lemo (Sync)','Lemo (TC In/Out)'],
+    aud:['3.5mm Stereo (마이크 In)'],vid:['HDMI Type A'],
+    dat:['USB 3.0 Type B','Lemo 10-pin (EXT)','RJ-45'],
+    mnt:['LPL Mount','PL Mount']},
+  alexaminilf:{n:'ARRI ALEXA MINI LF',cat:'시네마캠',
+    spec:{센서:'Large Format CMOS (36.70×25.54mm)',해상도:'4.5K LF / 3.8K',프레임레이트:'최대 150fps',다이나믹레인지:'14.5 stop',코덱:'ARRIRAW / Apple ProRes',마운트:'LPL',무게:'2.6 kg'},
+    pw:['D-Tap 2핀 (24V)','4-pin XLR (12~34V)'],
+    sig:['BNC 6G-SDI','Lemo (Sync/TC)'],aud:['3.5mm Stereo'],vid:['HDMI Type A'],
+    dat:['USB 3.0','Lemo 10-pin (EXT)','RJ-45'],mnt:['LPL Mount']},
+  burano:{n:'Sony BURANO',cat:'시네마캠',
+    spec:{센서:'8.6K Full Frame CMOS',해상도:'8.6K / 4K',프레임레이트:'최대 120fps @ 4K',다이나믹레인지:'16 stop',코덱:'X-OCN / XAVC',마운트:'PL / E-Mount',무게:'2.6 kg'},
+    pw:['D-Tap 2핀 (12~24V)','V-Mount (BP-GL95)','Gold Mount (어댑터)'],
+    sig:['BNC 12G-SDI ×2','BNC 3G-SDI','4-pin Lemo (Sync)'],
+    aud:['XLR 3-pin ×2 (48V Phantom)','3.5mm Stereo'],vid:['HDMI 2.0 (풀사이즈)'],
+    dat:['USB-C','Multi/Micro USB','CFexpress Type A / SD 듀얼슬롯'],
+    mnt:['PL Mount','E-Mount (PL-E 어댑터)']},
+  fx9:{n:'Sony FX9',cat:'시네마캠',
+    spec:{센서:'6K Full Frame CMOS',해상도:'6K / UHD 4K',프레임레이트:'최대 120fps @ 4K',다이나믹레인지:'15+ stop (S-Log3)',코덱:'XAVC QFHD/HD',마운트:'E-Mount',무게:'1.9 kg'},
+    pw:['D-Tap 2핀 (어댑터)','BP-GL95 배터리 (14.4V)','DC IN 12V'],
+    sig:['BNC 3G-SDI (RAW Out)'],
+    aud:['XLR 3-pin ×2 (48V Phantom)','3.5mm Stereo'],vid:['HDMI Type A (4K 60p)'],
+    dat:['USB-C','Multi USB 3.1','CFexpress Type A / SD 듀얼슬롯'],mnt:['E-Mount']},
+  fx6:{n:'Sony FX6',cat:'시네마캠',
+    spec:{센서:'10.2MP Full Frame BSI CMOS',해상도:'UHD 4K / FHD',프레임레이트:'최대 120fps @ 4K · 240fps @ FHD',다이나믹레인지:'15+ stop',코덱:'XAVC S / XAVC S-I',마운트:'E-Mount',무게:'890 g'},
+    pw:['D-Tap 2핀 (V-Mount 어댑터)','NP-FZ100 배터리','USB-C PD (충전)'],
+    sig:['BNC 3G-SDI (RAW Out)'],
+    aud:['XLR 3-pin ×2 (48V Phantom)','3.5mm TRS (마이크)','3.5mm TRS (헤드폰)'],
+    vid:['HDMI Type A (4K 60p)'],
+    dat:['USB-C (SuperSpeed)','Multi USB','CFexpress Type A / SD 듀얼슬롯'],mnt:['E-Mount']},
+  fx3:{n:'Sony FX3',cat:'시네마캠',
+    spec:{센서:'12.1MP Full Frame BSI CMOS',해상도:'UHD 4K / FHD',프레임레이트:'최대 120fps @ 4K',다이나믹레인지:'15+ stop',코덱:'XAVC S / XAVC HS / XAVC S-I',마운트:'E-Mount',무게:'715 g'},
+    pw:['NP-FZ100 배터리','USB-C PD (충전)'],sig:[],
+    aud:['XLR 3-pin ×2 (핸들 장착 시, 48V)','3.5mm TRS (마이크/헤드폰)','MI Shoe'],
+    vid:['HDMI Type A (4K 60p)'],
+    dat:['USB-C (3.2 Gen 2)','Multi USB','CFexpress Type A / SD 듀얼슬롯'],mnt:['E-Mount']},
+  fs7:{n:'Sony FS7 M2',cat:'시네마캠',
+    spec:{센서:'4K Super 35 CMOS',해상도:'UHD 4K / FHD',프레임레이트:'최대 180fps @ FHD',다이나믹레인지:'14 stop',코덱:'XAVC / MPEG HD',마운트:'E-Mount',무게:'2.0 kg'},
+    pw:['D-Tap 2핀 (어댑터)','BP-GL95 배터리'],
+    sig:['BNC 3G-SDI'],
+    aud:['XLR 3-pin ×2 (핸들)','3.5mm Stereo'],vid:['HDMI'],
+    dat:['USB 3.0','Multi USB','XQD / CFexpress B'],mnt:['E-Mount']},
+  c300:{n:'Canon C300 Mark II',cat:'시네마캠',
+    spec:{센서:'4K Super 35 Dual Pixel CMOS',해상도:'DCI 4K (4096×2160)',프레임레이트:'최대 120fps @ FHD',다이나믹레인지:'12 stop',코덱:'Cinema RAW Light / XF-AVC',마운트:'EF / PL',무게:'1.5 kg'},
+    pw:['D-Tap 2핀 (어댑터)','BP-A30/60 배터리'],
+    sig:['BNC 3G-SDI ×2','BNC 3G-SDI (Genlock In)'],
+    aud:['XLR 3-pin ×2','3.5mm Stereo'],vid:['HDMI'],
+    dat:['USB','CF 듀얼슬롯','SD 슬롯'],mnt:['EF Mount','PL Mount (옵션)']},
+  r5c:{n:'Canon EOS R5c',cat:'시네마캠',
+    spec:{센서:'45MP Full Frame CMOS',해상도:'8K RAW / 4K 120p',프레임레이트:'최대 60fps @ 8K',다이나믹레인지:'12+ stop',코덱:'Cinema RAW Light / H.265 MP4',마운트:'RF Mount',무게:'680 g'},
+    pw:['LP-E6NH 배터리','USB-C PD (외부전원)'],sig:[],
+    aud:['XLR ×2 (마이크 어댑터)','3.5mm Stereo (마이크/헤드폰)'],vid:['HDMI Type A (4K 60p)'],
+    dat:['USB-C (3.2 Gen 2)','CFexpress Type B / SD 듀얼슬롯'],mnt:['RF Mount']},
+  komodo:{n:'RED KOMODO 6K',cat:'시네마캠',
+    spec:{센서:'6K Super 35 CMOS',해상도:'6144×3240',프레임레이트:'최대 40fps @ 6K · 96fps @ 2K',다이나믹레인지:'16+ stop',코덱:'REDCODE RAW',마운트:'Canon RF',무게:'1.05 kg'},
+    pw:['D-Tap 2핀 (12~20V)','NP-F550/970 배터리','USB-C PD (충전)'],
+    sig:['BNC 3G-SDI (Sync In)'],
+    aud:['3.5mm Stereo (마이크)'],vid:['HDMI 2.0'],
+    dat:['USB-C','CFexpress Type B'],mnt:['Canon RF Mount']},
+  raptor:{n:'RED V-RAPTOR [X]',cat:'시네마캠',
+    spec:{센서:'8K+ Super 35 CMOS',해상도:'8192×4320',프레임레이트:'최대 120fps @ 8K · 300fps @ 2K',다이나믹레인지:'17 stop',코덱:'REDCODE RAW / Apple ProRes'},
+    pw:['D-Tap 2핀 (24V)','V-Mount (어댑터)','Gold Mount (어댑터)'],
+    sig:['BNC 12G-SDI','Lemo (Sync/Genlock)'],
+    aud:['3.5mm TRS','XLR (어댑터)'],vid:['HDMI 2.0'],
+    dat:['USB-C','CFexpress Type B'],mnt:['DSMC3 → PL/EF/LPL 어댑터']},
+  bmpcc6k:{n:'Blackmagic PYXIS 6K',cat:'시네마캠',
+    spec:{센서:'6K Full Frame CMOS',해상도:'6048×4032',프레임레이트:'최대 50fps @ 6K',다이나믹레인지:'13 stop',코덱:'Blackmagic RAW'},
+    pw:['D-Tap 2핀 (어댑터)','LP-E6 배터리','USB-C PD (충전)'],sig:[],
+    aud:['3.5mm Stereo','XLR (어댑터)'],vid:['HDMI 2.0'],
+    dat:['USB-C (3.1)','CFexpress / SD 듀얼슬롯'],mnt:['L-Mount','EF (어댑터)']},
+  a7m5:{n:'Sony A7M5',cat:'미러리스',
+    spec:{센서:'33MP Full Frame Exmor R BSI',해상도:'7008×4672',프레임레이트:'4K 60p / FHD 240p',다이나믹레인지:'15 stop',코덱:'XAVC S / XAVC HS',마운트:'E-Mount',무게:'514 g'},
+    pw:['NP-FZ100 배터리','USB-C PD (충전)'],sig:[],
+    aud:['3.5mm Stereo (마이크/헤드폰)','MI Shoe'],vid:['HDMI Type A (4K 60p, 10-bit)'],
+    dat:['USB-C (SuperSpeed 10Gbps)','CFexpress Type A / SD 듀얼슬롯'],mnt:['E-Mount']},
+  a7s3:{n:'Sony A7S III',cat:'미러리스',
+    spec:{센서:'12.1MP Full Frame BSI CMOS',해상도:'4240×2832',프레임레이트:'4K 120p / FHD 240p',다이나믹레인지:'15 stop',코덱:'XAVC S / XAVC HS / XAVC S-I',마운트:'E-Mount',무게:'614 g'},
+    pw:['NP-FZ100 배터리','USB-C PD'],sig:[],
+    aud:['3.5mm Stereo (마이크/헤드폰)','MI Shoe'],vid:['HDMI 2.1 (4K 120p, 16-bit RAW)'],
+    dat:['USB-C (3.2 Gen 2)','CFexpress Type A / SD 듀얼슬롯'],mnt:['E-Mount']},
+  r6m3:{n:'Canon EOS R6 Mark III',cat:'미러리스',
+    spec:{센서:'24.2MP Full Frame CMOS',해상도:'4K 60p / FHD 240p',프레임레이트:'최대 40fps (전자셔터)',코덱:'MP4 H.265 / ALL-I',마운트:'RF Mount',무게:'570 g'},
+    pw:['LP-E6P 배터리','USB-C PD'],sig:[],
+    aud:['3.5mm Stereo','3.5mm (헤드폰)'],vid:['HDMI Type A (4K 60p, 10-bit)'],
+    dat:['USB-C','CFexpress Type B / SD 듀얼슬롯'],mnt:['RF Mount']},
+  ap600d:{n:'Aputure LS 600D Pro',cat:'LED 조명',
+    spec:{출력:'720W / 600W 정격',색온도:'5600K ±200K',CRI:'96+ (R9:75+)',TLCI:'97+',조광:'0.1~100%',무선범위:'100m (2.4GHz)',무게:'4.64 kg'},
+    pw:['AC 100~240V (3-pin IEC)','V-Mount 배터리 2구 (자체 충전 지원)','Gold Mount 2구','D-Tap 2핀 (모니터 전원 Out)'],
+    sig:['DMX-512 5-pin XLR In','DMX-512 5-pin XLR Out','RDM 지원'],
+    aud:[],vid:[],dat:['2.4GHz 무선 (Sidus Link 앱)'],mnt:['Bowens Mount']},
+  ap600x:{n:'Aputure LS 600X Pro',cat:'LED 조명',
+    spec:{출력:'720W',색온도:'2700~6500K (Bi-Color)',CRI:'96+',TLCI:'97+',조광:'0.1~100%',무게:'5.0 kg'},
+    pw:['AC 100~240V','V-Mount 2구','Gold Mount 2구','D-Tap 2핀 Out'],
+    sig:['DMX-512 5-pin XLR In','DMX-512 5-pin XLR Out'],
+    aud:[],vid:[],dat:['2.4GHz 무선 (Sidus Link)'],mnt:['Bowens Mount']},
+  ap600c:{n:'Aputure LS 600C Pro RGB',cat:'LED 조명',
+    spec:{출력:'700W RGBWW',색온도:'2000~10000K + RGB',CRI:'95+',TLCI:'97+',조광:'0.1~100%',무게:'5.5 kg'},
+    pw:['AC 100~240V','V-Mount','Gold Mount','D-Tap 2핀 Out'],
+    sig:['DMX-512 5-pin XLR In/Out','Art-Net / sACN (RJ-45)'],
+    aud:[],vid:[],dat:['2.4GHz 무선 (Sidus Link)','RJ-45 Ethernet (Art-Net/sACN)'],mnt:['Bowens Mount']},
+  ap1200d:{n:'Aputure LS 1200D',cat:'LED 조명',
+    spec:{출력:'1200W',색온도:'5600K',CRI:'96+',조광:'0.1~100%',무게:'8.5 kg'},
+    pw:['AC 100~240V (전용 파워박스)','D-Tap 2핀 Out'],
+    sig:['DMX-512 5-pin XLR In/Out'],aud:[],vid:[],
+    dat:['2.4GHz 무선'],mnt:['Bowens Mount']},
+  ap1200x:{n:'Aputure Storm 1200X',cat:'LED 조명',
+    spec:{출력:'1200W',색온도:'2700~6500K',CRI:'96+',조광:'0~100%',무게:'9.2 kg'},
+    pw:['AC 100~240V','D-Tap 2핀 Out'],
+    sig:['DMX-512 5-pin XLR'],aud:[],vid:[],dat:['2.4GHz 무선'],mnt:['Bowens Mount']},
+  ap700x:{n:'Aputure Storm 700X',cat:'LED 조명',
+    spec:{출력:'700W',색온도:'2700~6500K',CRI:'96+',조광:'0.1~100%',무게:'6.5 kg'},
+    pw:['AC 100~240V','V-Mount','D-Tap 2핀'],
+    sig:['DMX-512 5-pin XLR In/Out'],aud:[],vid:[],dat:['2.4GHz 무선'],mnt:['Bowens Mount']},
+  ap400x:{n:'Aputure Storm 400X',cat:'LED 조명',
+    spec:{출력:'400W',색온도:'2700~6500K',CRI:'96+',조광:'0.1~100%',무게:'3.8 kg'},
+    pw:['AC 100~240V','V-Mount','D-Tap 2핀'],
+    sig:['DMX-512 5-pin XLR'],aud:[],vid:[],dat:['2.4GHz 무선'],mnt:['Bowens Mount']},
+  ap300dmk2:{n:'Aputure 300D Mark II',cat:'LED 조명',
+    spec:{출력:'350W',색온도:'5500K',CRI:'96+',TLCI:'97+',조광:'0~100%',무게:'4.0 kg'},
+    pw:['AC 100~240V','Gold Mount 2구','V-Mount (어댑터)','D-Tap 2핀 Out'],
+    sig:['DMX-512 5-pin XLR In/Out'],aud:[],vid:[],
+    dat:['2.4GHz 무선 (4채널)'],mnt:['Bowens Mount']},
+  ap300x:{n:'Aputure 300X Bi-Color',cat:'LED 조명',
+    spec:{출력:'350W',색온도:'2700~6500K',CRI:'96+',조광:'0~100%',무게:'4.2 kg'},
+    pw:['AC 100~240V','Gold Mount 2구','V-Mount 2구','D-Tap 2핀 Out'],
+    sig:['DMX-512 5-pin XLR'],aud:[],vid:[],dat:['2.4GHz 무선'],mnt:['Bowens Mount']},
+  ap300c:{n:'Aputure amaran 300c RGB',cat:'LED 조명',
+    spec:{출력:'300W RGBWW',색온도:'2500~10000K',CRI:'95+',조광:'0~100%',무게:'3.0 kg'},
+    pw:['AC 100~240V','V-Mount (2-bay Power Station 경유)','D-Tap 2핀 (2-bay 어댑터)'],
+    sig:['DMX-512 3-pin XLR In','RJ-45 (Art-Net/sACN)'],aud:[],vid:[],
+    dat:['2.4GHz 무선','RJ-45 Ethernet'],mnt:['Bowens Mount']},
+  ap100d:{n:'Aputure amaran 100d',cat:'LED 조명',
+    spec:{출력:'100W',색온도:'5600K',CRI:'96+',조광:'0~100%',무게:'0.95 kg'},
+    pw:['AC 100~240V','V-Mount (어댑터)','D-Tap (어댑터)'],
+    sig:['DMX-512 5-pin XLR In'],aud:[],vid:[],dat:['2.4GHz 무선 (Sidus Link)'],mnt:['Bowens Mount']},
+  ap60x:{n:'Aputure amaran 60X',cat:'LED 조명',
+    spec:{출력:'65W Bi-Color',색온도:'2700~6500K',CRI:'96+',조광:'0~100%',무게:'0.59 kg'},
+    pw:['AC 100~240V','V-Mount (어댑터)','D-Tap (어댑터)'],
+    sig:['DMX-512 5-pin XLR In'],aud:[],vid:[],dat:['2.4GHz 무선'],mnt:['Bowens Mount']},
+  ap80c:{n:'Aputure amaran 80C',cat:'LED 조명',
+    spec:{출력:'80W RGBWW',색온도:'2500~10000K',CRI:'95+',조광:'0~100%',무게:'0.75 kg'},
+    pw:['AC 100~240V','V-Mount (어댑터)','D-Tap (어댑터)'],
+    sig:['DMX-512 5-pin XLR In'],aud:[],vid:[],dat:['2.4GHz 무선'],mnt:['Bowens Mount']},
+  nova300c:{n:'Aputure Nova P300c',cat:'LED 조명',
+    spec:{출력:'300W RGBWW 소프트패널',색온도:'2000~10000K',CRI:'95+',패널크기:'60×90 cm',무게:'9.5 kg'},
+    pw:['AC 100~240V (전용 파워유닛)'],
+    sig:['DMX-512 5-pin XLR In/Out','Art-Net / sACN (RJ-45)'],
+    aud:[],vid:[],dat:['2.4GHz 무선 (Sidus Link)','RJ-45 Ethernet'],mnt:['Spigot 5/8인치']},
+  apray360c:{n:'Aputure amaran Ray 360C',cat:'LED 조명',
+    spec:{출력:'400W RGBWW 360도',색온도:'2500~10000K',CRI:'95+',형태:'원형 튜브',무게:'2.1 kg'},
+    pw:['AC 100~240V','V-Mount (파워뱅크 어댑터)','D-Tap 2핀 (파워뱅크 경유)'],
+    sig:['DMX-512 5-pin XLR'],aud:[],vid:[],dat:['2.4GHz 무선'],mnt:['젬볼 / Spigot 5/8인치']},
+  apmc:{n:'Aputure MC',cat:'LED 조명',
+    spec:{출력:'3W RGBWW',색온도:'3200~6500K',CRI:'96+',배터리:'내장 (최대 1.5h)',무게:'85 g'},
+    pw:['USB-C 충전 (내장 배터리)'],sig:[],aud:[],vid:[],
+    dat:['3.5mm TRRS (컨트롤/체인 싱크)','2.4GHz 무선 (Sidus Link)'],
+    mnt:['Cold Shoe 1/4인치','마그넷 스트립']},
+  apf22c:{n:'Aputure amaran F22c',cat:'LED 조명',
+    spec:{출력:'200W RGBWW 소프트패널',색온도:'2500~10000K',CRI:'95+',패널크기:'60×60 cm',무게:'6.5 kg'},
+    pw:['AC 100~240V','D-Tap 2핀 (어댑터)'],
+    sig:['DMX-512 5-pin XLR In/Out'],aud:[],vid:[],dat:['2.4GHz 무선'],mnt:['Spigot 5/8인치']},
+  apf21c:{n:'Aputure amaran F21C',cat:'LED 조명',
+    spec:{출력:'100W RGBWW 소프트패널',색온도:'2500~10000K',CRI:'95+',패널크기:'60×30 cm',무게:'3.2 kg'},
+    pw:['AC 100~240V','D-Tap 2핀 (어댑터)'],
+    sig:['DMX-512 5-pin XLR'],aud:[],vid:[],dat:['2.4GHz 무선'],mnt:['Spigot 5/8인치']},
+  aport2c:{n:'Aputure amaran T2C',cat:'LED 조명',
+    spec:{출력:'30W RGBWW (2ft 튜브)',색온도:'2500~10000K',CRI:'95+',배터리:'내장 + AC',무게:'0.55 kg'},
+    pw:['AC 100~240V','USB-C PD (충전/전원)','내장 배터리'],
+    sig:['DMX-512 5-pin XLR'],aud:[],vid:[],dat:['2.4GHz 무선 (Sidus Link)','USB-C'],mnt:['Spigot 5/8인치']},
+  b7c:{n:'Aputure B7C',cat:'LED 조명',
+    spec:{출력:'45W RGBWW (1구)',색온도:'2000~10000K',CRI:'96+',마운트:'E26 소켓',배터리:'내장 (무선 3h)',무게:'380 g'},
+    pw:['E26 소켓 (AC 220V)','내장 배터리 (무선)'],sig:[],aud:[],vid:[],
+    dat:['2.4GHz 무선 (Sidus Link)','Bluetooth 5.0'],mnt:['E26 전구 소켓']},
+  nan60c:{n:'Nanlite Forza 60C',cat:'LED 조명',
+    spec:{출력:'65W RGBWW',색온도:'2700~7500K',CRI:'96+',무게:'1.1 kg'},
+    pw:['AC 100~240V','V-Mount (어댑터)','Gold Mount (어댑터)','D-Tap 2핀'],
+    sig:['DMX-512 5-pin XLR'],aud:[],vid:[],dat:['2.4GHz 무선 (Nanlink)'],mnt:['Bowens Mount']},
+  nan300:{n:'Nanlite Forza 300',cat:'LED 조명',
+    spec:{출력:'300W',색온도:'5600K',CRI:'96+',조광:'0~100%',무게:'3.2 kg'},
+    pw:['AC 100~240V','V-Mount (어댑터)','D-Tap 2핀'],
+    sig:['DMX-512 5-pin XLR In/Out'],aud:[],vid:[],dat:['2.4GHz 무선 (Nanlink)'],mnt:['Bowens Mount']},
+  evoke1200:{n:'Nanlite Evoke 1200',cat:'LED 조명',
+    spec:{출력:'1200W',색온도:'5600K',CRI:'96+',무게:'8.0 kg'},
+    pw:['AC 100~240V (전용 파워유닛)'],
+    sig:['DMX-512 5-pin XLR'],aud:[],vid:[],dat:['2.4GHz 무선'],mnt:['Bowens Mount']},
+  cineroid:{n:'Cineroid CFL 800 RGB',cat:'LED 조명',
+    spec:{출력:'80W RGBWW',색온도:'2700~10000K',CRI:'96+',무게:'1.8 kg'},
+    pw:['AC 100~240V','V-Mount (어댑터)','D-Tap 2핀'],
+    sig:['DMX-512 5-pin XLR'],aud:[],vid:[],dat:['2.4GHz 무선'],mnt:['Bowens Mount']},
+  mixpre6:{n:'Sound Devices MixPre-6 II',cat:'음향',
+    spec:{채널:'6 XLR In · 8트랙',프리앰프:'Kashmir Ultra',다이나믹레인지:'142 dB',샘플레이트:'최대 192kHz / 32-bit Float',무게:'564 g'},
+    pw:['USB-C PD (5~20V)','AA 배터리 ×8','D-Tap 2핀 (12V DC)','L배터리 마운트 (어댑터)'],
+    sig:['3.5mm (TC In / Sync)'],
+    aud:['XLR/TRS 콤보 ×6 (48V Phantom)','3.5mm TRS (헤드폰 Out)','3.5mm (TC In)'],
+    vid:[],dat:['USB-C (오디오 인터페이스 / 파일전송)','MicroSD 슬롯 ×2'],mnt:[]},
+  mixpre3:{n:'Sound Devices MixPre-3 II',cat:'음향',
+    spec:{채널:'3 XLR In · 5트랙',프리앰프:'Kashmir Ultra',다이나믹레인지:'142 dB',샘플레이트:'최대 192kHz / 32-bit Float',무게:'369 g'},
+    pw:['USB-C PD','AA 배터리 ×4','D-Tap 2핀 (12V)'],
+    sig:['3.5mm (TC In)'],
+    aud:['XLR/TRS 콤보 ×3 (48V Phantom)','3.5mm TRS (헤드폰)'],
+    vid:[],dat:['USB-C (오디오 인터페이스)','MicroSD 슬롯'],mnt:[]},
+  senn416:{n:'Sennheiser MKH-416',cat:'음향',
+    spec:{타입:'쇼트 샷건 콘덴서',주파수:'40Hz~20kHz',감도:'-30 dBV/Pa',SN:'80 dB (A)',팬텀파워:'48V (IEC 61938)',무게:'175 g'},
+    pw:['48V Phantom Power (XLR 경유)'],sig:[],
+    aud:['XLR 3-pin 캐넌 (출력)'],vid:[],dat:[],mnt:['5/8인치 마이크 클립']},
+  ntg3:{n:'RODE NTG-3',cat:'음향',
+    spec:{타입:'RF 바이어스드 샷건 콘덴서',주파수:'40Hz~20kHz',감도:'-30 dBV/Pa',SN:'82 dB',팬텀파워:'48V',무게:'163 g'},
+    pw:['48V Phantom Power (XLR)'],sig:[],
+    aud:['XLR 3-pin 캐넌 (출력)'],vid:[],dat:[],mnt:['5/8인치 마이크 클립']},
+  djmic3:{n:'DJI Mic 3',cat:'음향',
+    spec:{구성:'2 TX + 1 RX',주파수:'2.4GHz + 5.8GHz 듀얼밴드',배터리:'TX 최대 9h / RX 최대 6h',내장녹음:'32-bit Float / 내장 메모리',무게:'TX 28g / RX 61g'},
+    pw:['USB-C 충전 케이스'],sig:[],
+    aud:['3.5mm TRS (카메라 연결)','3.5mm TRRS (스마트폰)','Lightning 어댑터','USB-C 어댑터 (디지털 오디오)'],
+    vid:[],dat:['2.4GHz 무선','5.8GHz 무선','USB-C (충전/디지털)'],
+    mnt:['Cold Shoe (RX)','마그넷 클립 (TX)']},
+  djmic2:{n:'DJI Mic 2',cat:'음향',
+    spec:{구성:'2 TX + 1 RX',주파수:'2.4GHz',배터리:'TX 최대 6h',내장녹음:'32-bit Float, 8GB 내장',무게:'TX 22g'},
+    pw:['USB-C 충전'],sig:[],
+    aud:['3.5mm TRS (카메라)','3.5mm TRRS (스마트폰)','USB-C (디지털)'],
+    vid:[],dat:['2.4GHz 무선','USB-C'],mnt:['Cold Shoe','클립']},
+  larkmax2:{n:'HollyLand LARK MAX2',cat:'음향',
+    spec:{구성:'4 TX + 1 RX',주파수:'2.4GHz',배터리:'최대 10h',내장녹음:'TX 내장 지원',무게:'TX 16g'},
+    pw:['USB-C 충전'],sig:[],
+    aud:['3.5mm TRS (RX 출력)','USB-C 디지털 오디오 (RX)'],
+    vid:[],dat:['2.4GHz 무선','USB-C'],mnt:['클립 (TX)','Cold Shoe (RX)']},
+  uwpd21:{n:'Sony UWP-D21',cat:'음향',
+    spec:{타입:'무선 핀마이크 시스템',주파수:'566~638MHz (UHF)',SN:'105 dB',배터리:'AA ×2 (최대 8h)',무게:'TX 85g / RX 89g'},
+    pw:['AA 배터리 ×2 (TX/RX 각각)'],sig:[],
+    aud:['3.5mm TRS (TX 마이크 입력)','XLR 3-pin (RX 출력)','3.5mm TRS (RX 출력)','MI Shoe (Sony 카메라 직결)'],
+    vid:[],dat:['UHF 무선 (566~638MHz)'],mnt:['Hot Shoe / 벨트 클립']},
+  dpa4060:{n:'DPA 4060',cat:'음향',
+    spec:{타입:'전방향성 핀마이크 콘덴서',주파수:'20Hz~20kHz',감도:'-34 dBV/Pa',최대SPL:'120 dB',연결:'MicroDot (어댑터 필요)',무게:'1.8 g'},
+    pw:['Phantom 또는 플러그인 파워 (MicroDot 경유)'],sig:[],
+    aud:['MicroDot → XLR 3-pin 어댑터 (48V Phantom)','MicroDot → 3.5mm TRS 어댑터'],
+    vid:[],dat:[],mnt:['의복 클립 (검정/베이지)']},
+};
+
+const SHOPS=[
+  {nm:'제이포',url:'https://j4.co.kr',loc:'서울 신사',tags:['당일수령','학생할인'],dep:'보증금 별도',sd:.30,
+   p:{alexa35:null,alexamini:null,alexaminilf:null,amira:null,burano:null,fx9:70000,fx6:65000,fx3:55000,fx2:60000,fs7:null,c300:null,c70:45000,r5c:40000,komodo:null,raptor:null,monstro:null,bmpcc6k:40000,pyxis12k:null,a7m5:55000,a7s3:50000,r6m3:50000,lumixs1ii:null,nikonzr:null,gh6:30000,ap60x:null,ap100d:null,ap300dmk2:25000,ap300x:30000,ap300c:null,ap600d:40000,ap600x:45000,ap600c:null,ap1200d:null,ap1200x:null,ap700x:null,ap400x:null,ap80c:null,nova300c:null,apray360c:null,apmc:null,apf22c:null,apf21c:null,aport2c:null,b7c:null,nan60c:null,nan300:null,evoke1200:null,cineroid:null,djmic3:null,djmic2:null,larkmax2:null,mixpre3:25000,mixpre6:30000,senn416:20000,ntg3:null,uwpd21:10000,dpa4060:null,l2470:30000,l70200:35000,l1635:30000,l50:15000,l85:18000,rs3pro:null,djiair3:null,djimavic4:null,monitor:null},n:{fx6:'24h 운영 / 학생 30%'}},
+  {nm:'칠렌탈',url:'https://www.7rental.kr',loc:'서울 당산',tags:['당일수령','학생할인'],dep:'보증금 별도',sd:.20,
+   p:{alexa35:500000,alexamini:230000,alexaminilf:330000,amira:140000,burano:null,fx9:70000,fx6:70000,fx3:60000,fx2:60000,fs7:null,c300:null,c70:45000,r5c:null,komodo:80000,raptor:250000,monstro:170000,bmpcc6k:35000,pyxis12k:170000,a7m5:null,a7s3:null,r6m3:null,lumixs1ii:70000,nikonzr:70000,gh6:null,ap60x:20000,ap100d:null,ap300dmk2:25000,ap300x:30000,ap300c:null,ap600d:35000,ap600x:40000,ap600c:50000,ap1200d:60000,ap1200x:90000,ap700x:60000,ap400x:40000,ap80c:25000,nova300c:35000,apray360c:null,apmc:null,apf22c:35000,apf21c:25000,aport2c:null,b7c:40000,nan60c:null,nan300:null,evoke1200:null,cineroid:20000,djmic3:null,djmic2:null,larkmax2:null,mixpre3:null,mixpre6:40000,senn416:30000,ntg3:30000,uwpd21:15000,dpa4060:15000,l2470:null,l70200:null,l1635:null,l50:null,l85:null,rs3pro:null,djiair3:null,djimavic4:120000,monitor:null},n:{alexa35:'학생 ₩400,000'}},
+  {nm:'SLR렌트',url:'https://www.slrrent.com',loc:'서울 합정',tags:['당일수령','학생할인'],dep:'첫대여 30만 예치금',sd:.25,
+   p:{alexa35:null,alexamini:null,alexaminilf:null,amira:null,burano:null,fx9:60000,fx6:50000,fx3:45000,fx2:null,fs7:55000,c300:60000,c70:null,r5c:40000,komodo:null,raptor:null,monstro:null,bmpcc6k:null,pyxis12k:null,a7m5:50000,a7s3:45000,r6m3:45000,lumixs1ii:null,nikonzr:null,gh6:null,ap60x:null,ap100d:null,ap300dmk2:25000,ap300x:30000,ap300c:null,ap600d:40000,ap600x:40000,ap600c:50000,ap1200d:null,ap1200x:null,ap700x:null,ap400x:null,ap80c:null,nova300c:null,apray360c:null,apmc:null,apf22c:null,apf21c:null,aport2c:null,b7c:null,nan60c:null,nan300:null,evoke1200:null,cineroid:null,djmic3:null,djmic2:null,larkmax2:null,mixpre3:30000,mixpre6:35000,senn416:20000,ntg3:null,uwpd21:null,dpa4060:null,l2470:35000,l70200:40000,l1635:35000,l50:18000,l85:20000,rs3pro:null,djiair3:null,djimavic4:null,monitor:null},n:{fx6:'씨네 일부 학생할인 제외'}},
+  {nm:'480p렌탈',url:'https://www.480prental.com',loc:'서울 성수',tags:['당일수령','학생할인'],dep:'보증금 별도',sd:.20,
+   p:{alexa35:null,alexamini:null,alexaminilf:null,amira:null,burano:null,fx9:null,fx6:null,fx3:null,fx2:null,fs7:null,c300:null,c70:null,r5c:null,komodo:null,raptor:null,monstro:null,bmpcc6k:null,pyxis12k:null,a7m5:null,a7s3:null,r6m3:null,lumixs1ii:null,nikonzr:null,gh6:null,ap60x:20000,ap100d:null,ap300dmk2:33000,ap300x:35000,ap300c:25000,ap600d:48000,ap600x:null,ap600c:null,ap1200d:65000,ap1200x:90000,ap700x:65000,ap400x:40000,ap80c:30000,nova300c:50000,apray360c:null,apmc:10000,apf22c:35000,apf21c:22000,aport2c:15000,b7c:20000,nan60c:25000,nan300:20000,evoke1200:60000,cineroid:30000,djmic3:null,djmic2:null,larkmax2:null,mixpre3:null,mixpre6:null,senn416:null,ntg3:null,uwpd21:null,dpa4060:null,l2470:null,l70200:null,l1635:null,l50:null,l85:null,rs3pro:null,djiair3:null,djimavic4:null,monitor:null},n:{ap600d:'라이트돔 제공가능'}},
+  {nm:'수상한렌탈',url:'https://www.susangrental.com',loc:'서울',tags:['당일수령','학생할인'],dep:'보증금 별도',sd:.20,
+   p:{alexa35:1000000,alexamini:450000,alexaminilf:650000,amira:300000,burano:460000,fx9:150000,fx6:150000,fx3:null,fx2:null,fs7:null,c300:null,c70:null,r5c:null,komodo:150000,raptor:null,monstro:null,bmpcc6k:null,pyxis12k:null,a7m5:null,a7s3:null,r6m3:null,lumixs1ii:null,nikonzr:null,gh6:null,ap60x:null,ap100d:null,ap300dmk2:null,ap300x:null,ap300c:null,ap600d:null,ap600x:null,ap600c:null,ap1200d:null,ap1200x:null,ap700x:null,ap400x:null,ap80c:null,nova300c:null,apray360c:null,apmc:null,apf22c:null,apf21c:null,aport2c:null,b7c:null,nan60c:null,nan300:null,evoke1200:null,cineroid:null,djmic3:null,djmic2:null,larkmax2:null,mixpre3:null,mixpre6:null,senn416:null,ntg3:null,uwpd21:null,dpa4060:null,l2470:null,l70200:null,l1635:null,l50:null,l85:null,rs3pro:null,djiair3:null,djimavic4:null,monitor:null},n:{alexa35:'풀세트/독립할인 ₩650,000'}},
+  {nm:'빌리지렌탈',url:'https://village6k.co.kr',loc:'서울 홍대',tags:['당일수령','학생할인'],dep:'보증금 별도',sd:.20,
+   p:{alexa35:null,alexamini:null,alexaminilf:null,amira:null,burano:null,fx9:100000,fx6:100000,fx3:70000,fx2:null,fs7:null,c300:null,c70:null,r5c:null,komodo:null,raptor:null,monstro:null,bmpcc6k:null,pyxis12k:null,a7m5:null,a7s3:null,r6m3:null,lumixs1ii:null,nikonzr:null,gh6:null,ap60x:null,ap100d:null,ap300dmk2:null,ap300x:30000,ap300c:null,ap600d:null,ap600x:null,ap600c:null,ap1200d:null,ap1200x:null,ap700x:null,ap400x:null,ap80c:null,nova300c:null,apray360c:null,apmc:null,apf22c:null,apf21c:null,aport2c:null,b7c:null,nan60c:null,nan300:null,evoke1200:null,cineroid:null,djmic3:null,djmic2:null,larkmax2:null,mixpre3:null,mixpre6:null,senn416:null,ntg3:null,uwpd21:null,dpa4060:null,l2470:null,l70200:null,l1635:null,l50:null,l85:null,rs3pro:null,djiair3:null,djimavic4:null,monitor:null},n:{fx9:'풀세트'}},
+  {nm:'키렌탈',url:'https://keyrental.co.kr',loc:'서울 홍대',tags:['당일수령','택배가능'],dep:'보증금 별도',sd:0,
+   p:{alexa35:null,alexamini:null,alexaminilf:null,amira:null,burano:null,fx9:60000,fx6:55000,fx3:50000,fx2:null,fs7:60000,c300:70000,c70:null,r5c:40000,komodo:null,raptor:null,monstro:null,bmpcc6k:null,pyxis12k:null,a7m5:50000,a7s3:50000,r6m3:50000,lumixs1ii:null,nikonzr:null,gh6:null,ap60x:null,ap100d:10000,ap300dmk2:22000,ap300x:30000,ap300c:null,ap600d:45000,ap600x:45000,ap600c:50000,ap1200d:null,ap1200x:null,ap700x:null,ap400x:null,ap80c:null,nova300c:null,apray360c:35000,apmc:5000,apf22c:null,apf21c:null,aport2c:null,b7c:null,nan60c:15000,nan300:20000,evoke1200:null,cineroid:null,djmic3:25000,djmic2:15000,larkmax2:25000,mixpre3:30000,mixpre6:35000,senn416:20000,ntg3:null,uwpd21:10000,dpa4060:null,l2470:30000,l70200:35000,l1635:30000,l50:15000,l85:18000,rs3pro:35000,djiair3:80000,djimavic4:null,monitor:20000},n:{fx3:'핸들 +5,000'}},
+  {nm:'데이페이',url:'https://daypay.kr',loc:'서울·부천',tags:['당일수령','택배가능'],dep:'보증금 별도',sd:0,
+   p:{alexa35:null,alexamini:null,alexaminilf:null,amira:null,burano:null,fx9:80000,fx6:80000,fx3:null,fx2:null,fs7:null,c300:null,c70:null,r5c:50000,komodo:null,raptor:null,monstro:null,bmpcc6k:45000,pyxis12k:null,a7m5:60000,a7s3:55000,r6m3:55000,lumixs1ii:null,nikonzr:null,gh6:null,ap60x:null,ap100d:null,ap300dmk2:25000,ap300x:30000,ap300c:null,ap600d:50000,ap600x:50000,ap600c:55000,ap1200d:null,ap1200x:null,ap700x:null,ap400x:null,ap80c:null,nova300c:null,apray360c:40000,apmc:null,apf22c:null,apf21c:null,aport2c:null,b7c:null,nan60c:20000,nan300:25000,evoke1200:null,cineroid:null,djmic3:30000,djmic2:20000,larkmax2:20000,mixpre3:null,mixpre6:null,senn416:null,ntg3:null,uwpd21:null,dpa4060:null,l2470:25000,l70200:30000,l1635:25000,l50:null,l85:null,rs3pro:30000,djiair3:75000,djimavic4:null,monitor:20000},n:{fx6:'VVIP 50%↓'}},
+  {nm:'한렌탈',url:'https://www.hanent.com',loc:'서울 강남',tags:['당일수령'],dep:'보증금 별도',sd:0,
+   p:{alexa35:null,alexamini:null,alexaminilf:null,amira:null,burano:null,fx9:70000,fx6:50000,fx3:40000,fx2:null,fs7:45000,c300:50000,c70:null,r5c:null,komodo:null,raptor:null,monstro:null,bmpcc6k:null,pyxis12k:null,a7m5:null,a7s3:30000,r6m3:null,lumixs1ii:null,nikonzr:null,gh6:null,ap60x:10000,ap100d:null,ap300dmk2:null,ap300x:null,ap300c:null,ap600d:null,ap600x:38000,ap600c:null,ap1200d:null,ap1200x:null,ap700x:null,ap400x:null,ap80c:null,nova300c:null,apray360c:null,apmc:null,apf22c:null,apf21c:null,aport2c:null,b7c:null,nan60c:null,nan300:null,evoke1200:null,cineroid:null,djmic3:null,djmic2:15000,larkmax2:null,mixpre3:25000,mixpre6:25000,senn416:15000,ntg3:null,uwpd21:10000,dpa4060:null,l2470:35000,l70200:38000,l1635:35000,l50:18000,l85:20000,rs3pro:null,djiair3:null,djimavic4:null,monitor:null},n:{ap600x:'600X+JAMBALL 세트'}},
+  {nm:'콩렌탈',url:'https://youtuberental.com',loc:'온라인(택배)',tags:['택배가능','보증금없음'],dep:'보증금 없음',sd:0,
+   p:{alexa35:null,alexamini:null,alexaminilf:null,amira:null,burano:null,fx9:null,fx6:null,fx3:55000,fx2:null,fs7:null,c300:null,c70:null,r5c:35000,komodo:null,raptor:null,monstro:null,bmpcc6k:40000,pyxis12k:null,a7m5:35000,a7s3:40000,r6m3:33000,lumixs1ii:null,nikonzr:null,gh6:null,ap60x:null,ap100d:8000,ap300dmk2:18000,ap300x:22000,ap300c:null,ap600d:40000,ap600x:40000,ap600c:45000,ap1200d:null,ap1200x:null,ap700x:null,ap400x:null,ap80c:null,nova300c:null,apray360c:30000,apmc:5000,apf22c:null,apf21c:null,aport2c:null,b7c:null,nan60c:15000,nan300:20000,evoke1200:null,cineroid:null,djmic3:20000,djmic2:12000,larkmax2:18000,mixpre3:null,mixpre6:null,senn416:null,ntg3:null,uwpd21:8000,dpa4060:null,l2470:22000,l70200:25000,l1635:22000,l50:10000,l85:12000,rs3pro:25000,djiair3:70000,djimavic4:null,monitor:18000},n:{a7m5:'택배포함'}},
+  {nm:'진렌탈',url:'https://jinrental.net',loc:'서울 강남',tags:['당일수령'],dep:'보증금 별도',sd:0,
+   p:{alexa35:null,alexamini:null,alexaminilf:null,amira:null,burano:null,fx9:80000,fx6:70000,fx3:55000,fx2:null,fs7:60000,c300:70000,c70:null,r5c:45000,komodo:null,raptor:null,monstro:null,bmpcc6k:null,pyxis12k:null,a7m5:55000,a7s3:50000,r6m3:50000,lumixs1ii:null,nikonzr:null,gh6:null,ap60x:null,ap100d:null,ap300dmk2:25000,ap300x:30000,ap300c:null,ap600d:45000,ap600x:45000,ap600c:50000,ap1200d:null,ap1200x:null,ap700x:null,ap400x:null,ap80c:null,nova300c:null,apray360c:null,apmc:null,apf22c:null,apf21c:null,aport2c:null,b7c:null,nan60c:null,nan300:null,evoke1200:null,cineroid:null,djmic3:null,djmic2:null,larkmax2:null,mixpre3:25000,mixpre6:30000,senn416:20000,ntg3:null,uwpd21:null,dpa4060:null,l2470:30000,l70200:35000,l1635:30000,l50:15000,l85:18000,rs3pro:30000,djiair3:null,djimavic4:null,monitor:null},n:{}},
+  {nm:'모도랩',url:'https://e-friends.co.kr',loc:'서울 마포',tags:['당일수령'],dep:'보증금 별도',sd:0,
+   p:{alexa35:null,alexamini:null,alexaminilf:null,amira:null,burano:null,fx9:null,fx6:50000,fx3:45000,fx2:null,fs7:null,c300:null,c70:null,r5c:null,komodo:null,raptor:null,monstro:null,bmpcc6k:null,pyxis12k:null,a7m5:45000,a7s3:45000,r6m3:45000,lumixs1ii:null,nikonzr:null,gh6:null,ap60x:null,ap100d:8000,ap300dmk2:20000,ap300x:25000,ap300c:null,ap600d:40000,ap600x:40000,ap600c:null,ap1200d:null,ap1200x:null,ap700x:null,ap400x:null,ap80c:null,nova300c:null,apray360c:null,apmc:null,apf22c:null,apf21c:null,aport2c:null,b7c:null,nan60c:null,nan300:null,evoke1200:null,cineroid:null,djmic3:null,djmic2:null,larkmax2:null,mixpre3:null,mixpre6:null,senn416:null,ntg3:null,uwpd21:null,dpa4060:null,l2470:25000,l70200:30000,l1635:25000,l50:12000,l85:15000,rs3pro:null,djiair3:null,djimavic4:null,monitor:null},n:{fx6:'스튜디오 병설'}},
+  {nm:'사진상사',url:'https://m.sajinsangsa.co.kr',loc:'서울 충무로',tags:['당일수령','택배가능','보증금없음'],dep:'보증금 없음',sd:0,
+   p:{alexa35:null,alexamini:null,alexaminilf:null,amira:null,burano:null,fx9:null,fx6:null,fx3:null,fx2:null,fs7:null,c300:null,c70:null,r5c:null,komodo:null,raptor:null,monstro:null,bmpcc6k:null,pyxis12k:null,a7m5:null,a7s3:null,r6m3:null,lumixs1ii:null,nikonzr:null,gh6:null,ap60x:null,ap100d:7000,ap300dmk2:20000,ap300x:30000,ap300c:null,ap600d:45000,ap600x:45000,ap600c:50000,ap1200d:null,ap1200x:null,ap700x:null,ap400x:null,ap80c:null,nova300c:null,apray360c:null,apmc:null,apf22c:null,apf21c:null,aport2c:null,b7c:null,nan60c:null,nan300:null,evoke1200:null,cineroid:null,djmic3:null,djmic2:null,larkmax2:null,mixpre3:null,mixpre6:null,senn416:null,ntg3:null,uwpd21:null,dpa4060:null,l2470:null,l70200:null,l1635:null,l50:null,l85:null,rs3pro:null,djiair3:null,djimavic4:null,monitor:null},n:{}},
+  {nm:'수원미디어센터',url:'https://www.swmedia.or.kr/rental/equm/list.do',loc:'경기 수원',tags:['당일수령','보증금없음'],dep:'보증금 없음',sd:0,
+   p:{alexa35:null,alexamini:null,alexaminilf:null,amira:null,burano:null,fx9:null,fx6:null,fx3:null,fx2:null,fs7:null,c300:null,c70:null,r5c:null,komodo:null,raptor:null,monstro:null,bmpcc6k:null,pyxis12k:null,a7m5:30000,a7s3:null,r6m3:null,lumixs1ii:null,nikonzr:null,gh6:null,ap60x:null,ap100d:null,ap300dmk2:null,ap300x:null,ap300c:null,ap600d:null,ap600x:null,ap600c:null,ap1200d:null,ap1200x:null,ap700x:null,ap400x:null,ap80c:null,nova300c:null,apray360c:null,apmc:null,apf22c:null,apf21c:null,aport2c:null,b7c:null,nan60c:null,nan300:8000,evoke1200:null,cineroid:null,djmic3:null,djmic2:null,larkmax2:null,mixpre3:null,mixpre6:null,senn416:null,ntg3:null,uwpd21:null,dpa4060:null,l2470:15000,l70200:20000,l1635:15000,l50:null,l85:null,rs3pro:10000,djiair3:null,djimavic4:null,monitor:null},n:{a7m5:'공공기관·비영리'}},
+];
+
+const CMAP={pw:{l:'전원',cls:'pw',col:'#EF9F27'},sig:{l:'SDI / DMX / 제어',cls:'sig',col:'#378ADD'},aud:{l:'오디오',cls:'aud',col:'#1D9E75'},vid:{l:'비디오',cls:'vid',col:'#7F77DD'},dat:{l:'데이터 / 무선',cls:'dat',col:'#E24B4A'},mnt:{l:'마운트',cls:'mnt',col:'#888780'}};
+
+let curCat='cinema',curFilt='전체',curData=[],openGear=null;
+const fmt=n=>n.toLocaleString()+'원';
+const rnd=n=>Math.round(n);
+
+function switchTab(t,el){
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));el.classList.add('on');
+  document.getElementById('tv-price').style.display=t==='price'?'block':'none';
+  document.getElementById('tv-conn').style.display=t==='conn'?'block':'none';
+}
+function buildCat(){
+  document.getElementById('catg').innerHTML=Object.entries(CATS).map(([k,v])=>
+    `<span class="ct${k===curCat?' on':''}" onclick="setCat(this,'${k}')"><span>${v.i}</span><span>${v.l}</span></span>`
+  ).join('');
+}
+function buildGear(){
+  document.getElementById('gsel').innerHTML=CATS[curCat].g.map(g=>`<option value="${g.id}">${g.n}</option>`).join('');
+}
+function setCat(el,cat){
+  document.querySelectorAll('.ct').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');curCat=cat;buildGear();document.getElementById('kw').value='';doSearch();
+}
+function doSearch(){
+  const gear=document.getElementById('gsel').value;
+  const days=parseInt(document.getElementById('days').value)||1;
+  curData=SHOPS.map(s=>{
+    const base=s.p[gear];if(base==null)return null;
+    return{...s,gear,days,base,note:(s.n&&s.n[gear])||''};
+  }).filter(Boolean);
+  document.getElementById('mets').style.display=curData.length?'grid':'none';
+  document.getElementById('fw').style.display=curData.length?'block':'none';
+  doRender();
+}
+function setFilt(el,f){
+  document.querySelectorAll('.tg').forEach(t=>t.classList.remove('on'));el.classList.add('on');curFilt=f;doRender();
+}
+function doRender(){
+  const days=parseInt(document.getElementById('days').value)||1;
+  const sort=document.getElementById('ssort').value;
+  const kw=document.getElementById('kw').value.toLowerCase();
+  const stuOn=document.getElementById('stog').checked;
+  document.getElementById('snote').style.display=stuOn?'inline':'none';
+  let data=curData.map(s=>{
+    const disc=stuOn&&s.sd>0?s.sd:0;
+    const eDay=rnd(s.base*(1-disc));
+    return{...s,eDay,total:eDay*days,disc};
+  });
+  if(curFilt==='학생할인') data=data.filter(s=>s.sd>0);
+  else if(curFilt!=='전체') data=data.filter(s=>s.tags&&s.tags.includes(curFilt));
+  if(kw) data=data.filter(s=>s.nm.toLowerCase().includes(kw)||(s.note&&s.note.toLowerCase().includes(kw)));
+  if(sort==='price') data.sort((a,b)=>a.total-b.total);
+  else data.sort((a,b)=>a.nm.localeCompare(b.nm));
+  document.getElementById('rlbl').textContent=`${data.length}개 렌탈샵`;
+  if(data.length){
+    const ps=data.map(s=>s.total);
+    document.getElementById('mcnt').textContent=data.length+'개';
+    document.getElementById('mmin').textContent=fmt(Math.min(...ps));
+    document.getElementById('mmax').textContent=fmt(Math.max(...ps));
+  }
+  const el=document.getElementById('res');
+  if(!data.length){el.innerHTML='<div class="nores">조건에 맞는 렌탈샵이 없습니다.</div>';return;}
+  const minP=Math.min(...data.map(s=>s.total));
+  el.innerHTML=data.map(s=>{
+    const isBest=s.total===minP,stuApp=stuOn&&s.disc>0;
+    return`<div class="rcard${isBest?' best':''}">
+      <div>
+        <div class="rn"><a class="al" href="${s.url}" target="_blank">${s.nm}</a>
+          ${isBest?'<span class="bg b0">최저가</span>':''}
+          ${s.tags.includes('당일수령')?'<span class="bg b1">당일수령</span>':''}
+          ${s.tags.includes('보증금없음')?'<span class="bg b2">보증금없음</span>':''}
+          ${s.sd>0?`<span class="bg b3">학생 ${Math.round(s.sd*100)}%↓</span>`:''}
+        </div>
+        <div class="rm"><span>${s.loc}</span><span>${s.dep}</span></div>
+        ${s.note?`<div class="rnote">${s.note}</div>`:''}
+      </div>
+      <div class="pb">
+        ${stuApp?`<div class="po">${fmt(s.base*days)}</div>`:''}
+        <div class="pm${stuApp?' std':''}">${fmt(s.total)}</div>
+        <div class="ps">${days}일·일 ${fmt(s.eDay)}${stuApp?` (${Math.round(s.disc*100)}% 할인)`:''}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function renderConn(){
+  const kw=(document.getElementById('ckw').value||'').toLowerCase().trim();
+  const all=Object.entries(GDB);
+  const filtered=kw?all.filter(([,g])=>g.n.toLowerCase().includes(kw)||g.cat.toLowerCase().includes(kw)):all;
+  if(!filtered.length){document.getElementById('conn-list').innerHTML='<div class="nores">검색 결과가 없습니다.</div>';return;}
+  document.getElementById('conn-list').innerHTML=filtered.map(([id,g])=>{
+    const isOpen=id===openGear;
+    const specs=Object.entries(g.spec).map(([k,v])=>
+      `<div class="si"><div class="sk">${k}</div><div class="sv">${v}</div></div>`
+    ).join('');
+    const conns=Object.entries(CMAP).map(([key,{l,cls,col}])=>{
+      const items=g[key]||[];if(!items.length)return'';
+      return`<div class="csec"><div class="ctitle"><span class="cdot" style="background:${col}"></span>${l}</div>
+        <div class="cpills">${items.map(i=>`<span class="cp ${cls}">${i}</span>`).join('')}</div></div>`;
+    }).join('');
+    const legend=Object.values(CMAP).map(({l,col})=>`<span class="li"><span class="cdot" style="background:${col}"></span>${l}</span>`).join('');
+    return`<div class="gcard${isOpen?' open':''}">
+      <div class="ghead" onclick="toggleG('${id}')">
+        <div><div class="ghtitle">${g.n}</div><div class="ghcat">${g.cat}</div></div>
+        <span class="garrow">▼</span>
+      </div>
+      <div class="gbody"><div class="sgrid">${specs}</div>${conns}<div class="legend">${legend}</div></div>
+    </div>`;
+  }).join('');
+}
+function toggleG(id){openGear=openGear===id?null:id;renderConn();}
+buildCat();buildGear();doSearch();renderConn();
+</script>
+</body>
+</html>
